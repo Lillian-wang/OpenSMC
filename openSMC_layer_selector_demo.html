@@ -110,16 +110,22 @@
 // - go to API tab
 
 window.onload = function() {
+  // Utility function for showing a map layer.
+  function showlayer(vis, e) {
+    vis.getLayers()[1].getSubLayer(0).hide();
+    vis.getLayers()[1].getSubLayer(1).hide();
+    vis.getLayers()[1].getSubLayer(2).hide();
+    vis.getLayers()[1].getSubLayer(e).show();
+  };
+  // Create Map
   cartodb.createVis('map', 'https://opensmc.carto.com/api/v2/viz/71e3c5bc-9014-11e6-9b53-0e233c30368f/viz.json')
   .on('done', function(vis, layers) {
-    $('#layer-controls').on('click', 'input', function(e) {
+    // Set initial state of the map
+    showlayer(vis, 0);
+    $('#layer-controls').on('change', 'input', function(e) {
       var layerSelector = e.currentTarget;
-      var layerToHide = parseInt($(layerSelector).attr('data-enable-layer'), 10);
-      if (this.checked) {
-        vis.getLayers()[1].getSubLayer(layerToHide).show();
-      } else {
-        vis.getLayers()[1].getSubLayer(layerToHide).hide();
-      }
+      var layerToOpen = $(layerSelector).val();
+      showlayer(vis, layerToOpen);
     });
   });
 }

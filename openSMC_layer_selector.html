@@ -84,17 +84,17 @@
       <div id="layer-controls">
         <h3>Toggle layers</h3>
         <label class="switch">
-          <input type="checkbox" id="checkbox0" data-enable-layer="0" checked>
+          <input type="radio" value="0" name="layer-to-enable" checked>
           <div class="slider"></div>
           <span class="label-text">Chicken</span>
         </label>
         <label class="switch">
-          <input type="checkbox" id="checkbox1" data-enable-layer="1" checked>
+          <input type="radio" value="1" name="layer-to-enable">
           <div class="slider"></div>
           <span class="label-text">Bees</span>
         </label>
         <label class="switch">
-          <input type="checkbox" id="checkbox2" data-enable-layer="2" checked>
+          <input type="radio" value="2" name="layer-to-enable">
           <div class="slider"></div>
           <span class="label-text">Gardens</span>
         </label>
@@ -110,16 +110,22 @@
 // - go to API tab
 
 window.onload = function() {
+  // Utility function for showing a map layer.
+  function showlayer(vis, e) {
+    vis.getLayers()[1].getSubLayer(0).hide();
+    vis.getLayers()[1].getSubLayer(1).hide();
+    vis.getLayers()[1].getSubLayer(2).hide();
+    vis.getLayers()[1].getSubLayer(e).show();
+  };
+  // Create Map
   cartodb.createVis('map', 'https://opensmc.carto.com/api/v2/viz/71e3c5bc-9014-11e6-9b53-0e233c30368f/viz.json')
   .on('done', function(vis, layers) {
-    $('#layer-controls').on('click', 'input', function(e) {
+    // Set initial state of the map
+    showlayer(vis, 0);
+    $('#layer-controls').on('change', 'input', function(e) {
       var layerSelector = e.currentTarget;
-      var layerToHide = parseInt($(layerSelector).attr('data-enable-layer'), 10);
-      if (this.checked) {
-        vis.getLayers()[1].getSubLayer(layerToHide).show();
-      } else {
-        vis.getLayers()[1].getSubLayer(layerToHide).hide();
-      }
+      var layerToOpen = $(layerSelector).val();
+      showlayer(vis, layerToOpen);
     });
   });
 }
