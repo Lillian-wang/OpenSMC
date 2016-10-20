@@ -1,7 +1,7 @@
 <html>
   <head>
     <title>Open SMC Map</title>
-    <link rel="stylesheet" href="//libs.cartocdn.com/cartodb.js/v3/3.15/themes/css/cartodb.css" />
+    <link rel="stylesheet" href="./cartodb.css" />
     <style>
     #map-container {
       position: relative;
@@ -100,7 +100,7 @@
         </label>
       </div>
     </div>
-<script src="//libs.cartocdn.com/cartodb.js/v3/3.15/cartodb.js"></script>
+<script src="./cartodb.js"></script>
     <script>
 // get the viz.json url from the CARTO Editor
 // - click on visualize
@@ -110,7 +110,7 @@
 // - go to API tab
 
 window.onload = function() {
-  cartodb.createVis('map', '//opensmc.carto.com/api/v2/viz/71e3c5bc-9014-11e6-9b53-0e233c30368f/viz.json')
+  cartodb.createVis('map', 'https://opensmc.carto.com/api/v2/viz/71e3c5bc-9014-11e6-9b53-0e233c30368f/viz.json')
   .on('done', function(vis, layers) {
     $('#layer-controls').on('click', 'input', function(e) {
       var layerSelector = e.currentTarget;
