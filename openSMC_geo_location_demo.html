@@ -108,33 +108,31 @@
 // - make visualization public
 // - click on publish
 // - go to API tab
-function detectUserLocation(){
-  if (navigator.Geolocation) {
+function detectUserLocationAndZoom(map) {
+  if (navigator.geolocation) {
     var timeoutVal = 10 * 1000 * 1000;
     navigator.geolocation.watchPosition(
-      mapToPosition, 
-      alertError,
+      function(position) {
+        var UPPER_LEFT_CORNER_LAT=37.8;
+        var UPPER_LEFT_CORNER_LON=-122.8;
+        var LOWER_RIGHT_CORNER_LAT=37.1;
+        var LOWER_RIGHT_CORNER_LON=-121.5;
+        var lon = position.coords.longitude;
+        var lat = position.coords.latitude;
+        // If user is within the bay area as defined by the above
+        // coordinates, zoom in on his/her location.
+        if (LOWER_RIGHT_CORNER_LAT < lat &&
+            UPPER_LEFT_CORNER_LAT > lat &&
+            UPPER_LEFT_CORNER_LON < lon &&
+            LOWER_RIGHT_CORNER_LON > lon) {
+          map.setView(new L.LatLng(lat,lon), 12);
+          new L.CircleMarker([lat,lon],{radius: 4}).addTo(map);
+        }
+      }, 
+      function() {},
       { enableHighAccuracy: true, timeout: timeoutVal, maximumAge: 0 }
     );
-  } else {
-     alert("Geolocation is not supported by this browser");
   }
-
-function alertError(error) {
-    var errors = { 
-      1: 'Permission denied',
-      2: 'Position unavailable',
-      3: 'Request timeout'
-    };
-    alert("Error: " + errors[error.code]);
-  }
-}
-
-function mapToPosition(position) {
-  lon = position.coords.longitude;
-  lat = position.coords.latitude;
-  map.setView(new L.LatLng(lat,lon), 7);
-  new L.CircleMarker([lat,lon],{radius: 4}).addTo(map);
 }
 
 window.onload = function() {
@@ -149,7 +147,8 @@ window.onload = function() {
   cartodb.createVis('map', 'https://opensmc.carto.com/api/v2/viz/71e3c5bc-9014-11e6-9b53-0e233c30368f/viz.json')
   .on('done', function(vis, layers) {
     // Set initial state of the map
-    detectUserLocation();
+    var map = vis.getNativeMap();
+    detectUserLocationAndZoom(map);
     showlayer(vis, 0);
     $('#layer-controls').on('change', 'input', function(e) {
       var layerSelector = e.currentTarget;
